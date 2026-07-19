@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Link Shopee - Săn Sale Cùng Linh</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #fce4dc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding-top: 40px; }
+        .header-title { text-align: center; margin-bottom: 20px; }
+        .header-title h1 { color: #ee4d2d; font-size: 24px; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .badge { background-color: #f8c8b9; color: #ee4d2d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold;}
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 90%; max-width: 500px; }
+        .input-group { display: flex; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; margin-bottom: 15px;}
+        .input-group input { flex: 1; padding: 12px; border: none; outline: none; font-size: 14px; }
+        .input-group .paste-btn { background: #f8f9fa; border: none; border-left: 1px solid #ddd; padding: 0 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s;}
+        .input-group .paste-btn:hover { background: #e9ecef; color: #ee4d2d; }
+        .btn-generate { width: 100%; padding: 14px; background-color: #ee4d2d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
+        .btn-generate:hover { background-color: #d73a1c; }
+        .result-card { border: 1.5px solid #ee4d2d; border-radius: 8px; padding: 15px; margin-top: 20px; display: none; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .status-icon { color: #00bfa5; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .btn-copy-small { background-color: #ee4d2d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;}
+        .btn-copy-small:hover { opacity: 0.9; }
+        textarea { width: 100%; border: none; resize: none; color: #555; font-size: 13px; font-family: monospace; outline: none; word-break: break-all; background: #fff;}
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; display: none; }
+        .action-buttons button { flex: 1; padding: 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;}
+        .btn-buy { background-color: #00bfa5; }
+        .btn-buy:hover { background-color: #00a68f; }
+        .btn-share { background-color: #3b5998; }
+        .btn-share:hover { background-color: #2d4373; }
+        
+        /* Chỉnh lại phần hướng dẫn cho gọn gàng */
+        .instructions { background: #f4f6f8; padding: 15px; border-radius: 8px; margin-top: 25px; font-size: 13.5px; line-height: 1.6; color: #333;}
+        .instructions strong { color: #1877f2; display: flex; align-items: center; gap: 5px; margin-bottom: 8px; font-size: 15px;}
+        .instructions ol { padding-left: 20px; margin: 0; }
+        .instructions li { margin-bottom: 5px; }
+
+        /* Banner Group Cực Đẹp */
+        .group-banner {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #1877f2 0%, #0a4b9e 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .group-banner:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(24, 119, 242, 0.4);
+        }
+        .banner-icon { font-size: 32px; margin-right: 15px; }
+        .banner-text { flex: 1; display: flex; flex-direction: column; }
+        .banner-text strong { font-size: 16px; margin-bottom: 3px; }
+        .banner-text span { font-size: 12px; opacity: 0.9; line-height: 1.4; }
+        .banner-arrow { font-size: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header-title">
+        <h1>🔗 Tạo Link Shopee</h1>
+        <span class="badge">sansalecunglinh</span>
+    </div>
+
+    <div class="container">
+        <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #333;">🔒 Link sản phẩm Shopee</div>
+        <div class="input-group">
+            <input type="text" id="originalLink" placeholder="Dán link sản phẩm vào đây...">
+            <button class="paste-btn" onclick="document.getElementById('originalLink').value = ''">❌ Xóa</button>
+        </div>
+        
+        <button class="btn-generate" onclick="generateLink()">🪄 Tạo Link Ngay</button>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <span class="status-icon">✅ Link 1</span>
+                <button class="btn-copy-small" onclick="copyLink()">📋 Copy</button>
+            </div>
+            <textarea id="affiliateLink" rows="4" readonly></textarea>
+        </div>
+
+        <div class="action-buttons" id="actionButtons">
+            <button class="btn-buy" onclick="openLink()">🛒 Mua Ngay</button>
+            <button class="btn-share" onclick="copyLink()">🔗 Chia sẻ</button>
+        </div>
+
+        <div class="instructions">
+            <strong>ℹ️ Hướng dẫn</strong>
+            <ol>
+                <li>Bước 1: Sau khi tạo link, nhấn <b>Copy</b>.</li>
+                <li>Bước 2: Bạn có thể dán link này vào phần bình luận bài đăng (ngay cả bài viết ở chế độ 'Chỉ mình tôi'của bạn) hoặc chia sẻ trực tiếp vào Group Săn Sale bên dưới để chốt đơn ngay</li>
+                <li>Bước 3: Sau đó bạn click vào link vừa dán ở CMT sẽ tự động được áp các mã giảm giá Facebook 25%.</li>
+            </ol>
+        </div>
+
+        <a href="https://web.facebook.com/groups/617288902273549" target="_blank" class="group-banner">
+            <div class="banner-icon">🔥</div>
+            <div class="banner-text">
+                <strong>Tham Gia Group Săn Sale</strong>
+                <span>Nhận mã giảm giá & Deal linh kiện PC siêu rẻ mỗi ngày!</span>
+            </div>
+            <div class="banner-arrow">➔</div>
+        </a>
+
+    </div>
+
+    <script>
+        const MY_AFF_ID = "17306910164"; 
+        const SUB_ID = "addlivetag-linhpc---"; 
+
+        function generateLink() {
+            var originalLink = document.getElementById("originalLink").value;
+            if(originalLink === "") {
+                alert("Bạn chưa dán link kìa!");
+                return;
+            }
+
+            var cleanLink = originalLink.split('?')[0];
+            var encodedLink = encodeURIComponent(cleanLink);
+            var finalAffiliateLink = "https://s.shopee.vn/an_redir?origin_link=" + encodedLink + "&affiliate_id=" + MY_AFF_ID + "&sub_id=" + SUB_ID;
+
+            document.getElementById("affiliateLink").value = finalAffiliateLink;
+            document.getElementById("resultCard").style.display = "block";
+            document.getElementById("actionButtons").style.display = "flex";
+        }
+
+        function copyLink() {
+            var copyText = document.getElementById("affiliateLink");
+            if(copyText.value === "") return;
+            copyText.select();
+            document.execCommand("copy");
+            alert("Đã copy thành công! Giờ mang đi rải link thôi.");
+        }
+
+        function openLink() {
+            var link = document.getElementById("affiliateLink").value;
+            if(link !== "") {
+                window.open(link, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
