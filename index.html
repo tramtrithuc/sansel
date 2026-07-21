@@ -16,6 +16,7 @@ async function generateAffLink() {
         return;
     }
 
+    // Đảm bảo link luôn có https://
     if (!inputLink.startsWith("http")) {
         inputLink = "https://" + inputLink;
     }
@@ -34,7 +35,6 @@ async function generateAffLink() {
     btn.innerText = "Đang xử lý...";
 
     resultBox.style.display = "block";
-    // Ẩn bảng hiển thị hình ảnh/tên sản phẩm vì AccessTrade API không trả về dữ liệu này
     productCard.style.display = "none"; 
 
     statusText.innerText = "⏳ Đang kết nối với AccessTrade...";
@@ -43,49 +43,46 @@ async function generateAffLink() {
     buyBtn.style.display = "none";
 
     try {
-        // Gửi yêu cầu lên API của AccessTrade
-        const res = await fetch("https://api.accesstrade.vn/v1/product_link/create", {
+        // ĐÃ SỬA CHỖ NÀY: Thêm corsproxy.io để trình duyệt không chặn API
+        const apiUrl = "https://corsproxy.io/?https://api.accesstrade.vn/v1/product_link/create";
+        
+        const res = await fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // Gắn Token AccessTrade của bạn tại đây
+                // Token AccessTrade của bạn
                 "Authorization": "Token 5T1WLRgD0tNK35nKgPJFipWfCBeHAt-r" 
             },
             body: JSON.stringify({
-                // 4348614231480407268 là ID mặc định của chiến dịch Shopee VN trên AccessTrade
-                // ĐẢM BẢO BẠN ĐÃ ĐĂNG KÝ VÀ ĐƯỢC DUYỆT CHIẾN DỊCH SHOPEE TRÊN ACCESSTRADE
-                "campaign_id": "4348614231480407268", 
+                "campaign_id": "4348614231480407268", // ID chiến dịch Shopee VN
                 "urls": [inputLink],
-                "utm_source": subId // Gắn số Zalo vào tham số source để theo dõi đơn
+                "utm_source": subId
             })
         });
 
         const data = await res.json();
 
-        // Kiểm tra kết quả trả về từ AccessTrade
         if (data && data.data && data.data.length > 0 && data.data[0].short_link) {
             const shortLink = data.data[0].short_link;
 
-            // Nội dung để copy (Giấu ở input hidden)
-            output.value = "Link mua hàng Shopee: " + shortLink;
+            output.value = shortLink; // Chỉ lưu link để copy cho gọn
 
-            // Hiển thị nút Mua Ngay
             buyBtn.href = shortLink;
             buyBtn.style.display = "block";
 
-            // Xử lý nút Copy
             statusText.innerText = "";
             statusText.style.display = "none";
             copyBtn.disabled = false;
             copyBtn.innerText = "📋 Sao chép Link";
 
         } else {
-            throw new Error("Lỗi API: Không tạo được link, hãy xem lại link gốc hoặc Campaign ID.");
+            console.log("Dữ liệu trả về bị lỗi:", data);
+            throw new Error("Lỗi API từ AccessTrade (Có thể sai Campaign ID hoặc link rác)");
         }
 
     } catch (err) {
         console.log(err);
-        statusText.innerText = "❌ Lỗi: Có thể do bị trình duyệt chặn (CORS) hoặc link sai.";
+        statusText.innerText = "❌ Lỗi: " + err.message;
         statusText.style.display = "block";
     }
 
@@ -97,7 +94,6 @@ async function generateAffLink() {
 function copyToClipboard() {
     const copyText = document.getElementById("outputLink").value;
     navigator.clipboard.writeText(copyText);
-    alert("Đã sao chép link thành công!");
+    alert("Đã sao chép link: " + copyText);
 }
 </script>
-
