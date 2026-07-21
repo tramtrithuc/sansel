@@ -1,1 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hoàn tiền Shopee cùng Thức</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ee4d2d" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
+  <style>
+    :root {
+      --orange: #ee4d2d;
+      --orange-light: #ff7250;
+      --yellow: #ffd700;
+      --cream: #fff8f5;
+      --text: #2d1a14;
+      --text-soft: #7a5a4e;
+      --card-bg: #ffffff;
+      --radius: 24px;
+      --green: #27ae60;
+      --green-light: #e8f8f0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* BG */
+    .bg-blobs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.15; animation: drift 12s ease-in-out infinite alternate; }
+    .blob-1 { width: 460px; height: 460px; background: var(--orange); top: -100px; left: -120px; animation-duration: 14s; }
+    .blob-2 { width: 300px; height: 300px; background: var(--yellow); top: 45%; right: -80px; animation-duration: 10s; animation-delay: -4s; }
+    .blob-3 { width: 240px; height: 240px; background: var(--orange-light); bottom: 0; left: 25%; animation-duration: 16s; animation-delay: -2s; }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(28px,18px) scale(1.08); } }
+
+    /* CARD */
+    .card {
+      position: relative; z-index: 1;
+      margin: 40px 16px 32px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 36px 28px 32px;
+      max-width: 420px; width: 100%;
+      box-shadow: 0 8px 48px rgba(238,77,45,0.13), 0 2px 8px rgba(0,0,0,0.05);
+      animation: slideUp 0.7s cubic-bezier(.22,1,.36,1) both;
+      text-align: center;
+    }
+    @keyframes slideUp { from { opacity:0; transform:translateY(36px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── HOME PAGE ── */
+    .avatar-wrap { margin-bottom: 14px; }
+    .avatar {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 4px 20px rgba(238,77,45,0.3);
+      animation: popIn 0.6s cubic-bezier(.34,1.56,.64,1) 0.2s both;
+    }
+    @keyframes popIn { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+    .name-tag { font-family:'Baloo 2',sans-serif; font-weight:600; font-size:14px; color:var(--text-soft); margin-bottom:10px; }
+    .headline { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:clamp(24px,7vw,32px); color:var(--text); line-height:1.25; margin-bottom:10px; }
+    .headline span { background:linear-gradient(100deg,var(--orange),var(--orange-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .sub { font-size:14.5px; color:var(--text-soft); line-height:1.65; margin-bottom:24px; }
+    .tips { display:flex; flex-direction:column; gap:9px; margin-bottom:28px; text-align:left; }
+    .tip { background:#fdf5f3; border-radius:12px; padding:11px 15px; font-size:13.5px; color:var(--text); font-weight:600; border-left:3px solid var(--orange-light); animation:slideUp 0.6s cubic-bezier(.22,1,.36,1) both; }
+    .tip:nth-child(1){animation-delay:0.2s} .tip:nth-child(2){animation-delay:0.3s}
+
+    /* BUTTONS */
+    .btn-primary {
+      width:100%; padding:18px 24px; font-size:18px;
+      font-family:'Baloo 2',sans-serif; font-weight:800;
+      background:linear-gradient(135deg,var(--orange) 0%,var(--orange-light) 100%);
+      color:white; border:none; border-radius:14px; cursor:pointer;
+      position:relative; overflow:hidden;
+      box-shadow:0 6px 24px rgba(238,77,45,0.38);
+      transition:transform 0.15s ease, box-shadow 0.15s ease;
+      margin-bottom:16px;
+    }
+    .btn-primary::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent); border-radius:inherit; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(238,77,45,0.45); }
+    .btn-primary:active { transform:translateY(1px); box-shadow:0 4px 14px rgba(238,77,45,0.28); }
+    .btn-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .arrow { font-size:20px; transition:transform 0.2s ease; }
+    .btn-primary:hover .arrow { transform:translateX(4px); }
+
+    .btn-ghost {
+      width:100%; padding:12px 24px; font-size:14px;
+      font-family:'Nunito',sans-serif; font-weight:700;
+      background:transparent; color:var(--text-soft);
+      border:1.5px solid #e8d8d3; border-radius:12px; cursor:pointer;
+      transition:all 0.15s ease;
+    }
+    .btn-ghost:hover { background:#fdf5f3; border-color:var(--orange-light); color:var(--orange); }
+
+    .cta-note { font-size:12px; color:var(--text-soft); display:flex; align-items:center; justify-content:center; gap:5px; margin-top:10px; }
+
+    /* ── LOGIN PAGE ── */
+    .login-header { margin-bottom:24px; }
+    .login-icon { font-size:40px; margin-bottom:10px; }
+    .login-title { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:22px; color:var(--text); margin-bottom:6px; }
+    .login-sub { font-size:13.5px; color:var(--text-soft); }
+
+    .form-group { text-align:left; margin-bottom:16px; }
+    .form-group label { display:block; font-size:13px; font-weight:700; color:var(--text-soft); margin-bottom:6px; }
+    .form-group input {
+      width:100%; padding:13px 16px; font-size:15px;
+      font-family:'Nunito',sans-serif;
+      background:#fdf5f3; border:1.5px solid #e8d8d3; border-radius:12px;
+      color:var(--text); outline:none;
+      transition:border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .form-group input:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(238,77,45,0.1); }
+
+    .error-msg {
+      background:#fff0ee; border:1.5px solid #f9c9bb; border-radius:10px;
+      padding:10px 14px; font-size:13px; color:#c0392b; font-weight:600;
+      margin-bottom:16px; display:none;
+    }
+    .error-msg.show { display:block; animation:shake 0.3s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    .back-link { margin-top:16px; font-size:13px; color:var(--text-soft); cursor:pointer; }
+    .back-link:hover { color:var(--orange); text-decoration:underline; }
+
+    /* ── PROFILE PAGE ── */
+    .profile-header { margin-bottom:24px; }
+    .profile-avatar {
+      width:68px; height:68px; border-radius:50%;
+      background:linear-gradient(135deg,var(--orange),var(--orange-light));
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:28px; margin-bottom:10px;
+      box-shadow:0 4px 16px rgba(238,77,45,0.25);
+    }
+    .profile-name { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:20px; color:var(--text); }
+    .profile-handle { font-size:13px; color:var(--text-soft); margin-top:2px; }
+
+    .stats-row { display:flex; gap:12px; margin-bottom:24px; }
+    .stat-box {
+      flex:1; background:#fdf5f3; border-radius:14px; padding:14px 10px;
+      text-align:center;
+    }
+    .stat-num { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:22px; color:var(--orange); }
+    .stat-label { font-size:11.5px; color:var(--text-soft); font-weight:600; margin-top:2px; }
+
+    .cashback-banner {
+      background:linear-gradient(135deg,var(--green),#2ecc71);
+      border-radius:14px; padding:14px 18px;
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:24px;
+      box-shadow:0 4px 16px rgba(39,174,96,0.25);
+    }
+    .cashback-left { text-align:left; }
+    .cashback-label { font-size:12px; color:rgba(255,255,255,0.8); font-weight:600; }
+    .cashback-amount { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:24px; color:white; }
+    .cashback-icon { font-size:32px; }
+
+    .section-title { font-family:'Baloo 2',sans-serif; font-weight:700; font-size:15px; color:var(--text); text-align:left; margin-bottom:12px; }
+
+    .order-list { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+    .order-item {
+      background:#fdf5f3; border-radius:14px; padding:14px 16px;
+      display:flex; align-items:center; gap:12px; text-align:left;
+    }
+    .order-icon { font-size:24px; flex-shrink:0; }
+    .order-info { flex:1; }
+    .order-name { font-size:13.5px; font-weight:700; color:var(--text); }
+    .order-date { font-size:12px; color:var(--text-soft); margin-top:2px; }
+    .order-cashback { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:14px; color:var(--green); }
+
+    .empty-state { padding:24px 0; color:var(--text-soft); font-size:14px; }
+    .empty-state .empty-icon { font-size:36px; margin-bottom:8px; }
+
+    .coming-soon-badge {
+      display:inline-block; background:#fff3eb; color:var(--orange);
+      font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px;
+      border:1px solid #f9c9bb; margin-left:8px; vertical-align:middle;
+    }
+
+    .logout-btn {
+      background:none; border:none; color:var(--text-soft);
+      font-size:13px; font-family:'Nunito',sans-serif; font-weight:600;
+      cursor:pointer; padding:8px; margin-top:8px;
+    }
+    .logout-btn:hover { color:var(--orange); }
+
+    /* PAGE TRANSITIONS */
+    .page { display:none; }
+    .page.active { display:block; animation:slideUp 0.4s cubic-bezier(.22,1,.36,1) both; }
+
+    .footer { position:relative; z-index:1; font-size:11px; color:#c0a9a3; padding-bottom:32px; text-align:center; }
+  </style>
+</head>
+<body>
+
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="card">
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="avatar-wrap"><div class="avatar">🧑‍💻</div></div>
+    <div class="name-tag">Thức gửi link nè 👋</div>
+    <h1 class="headline">Mua Shopee<br><span>được hoàn tiền</span> 🛍️</h1>
+    <p class="sub">Mua qua link này là tự động được hoàn tiền - không cần làm gì thêm, không cần nhập mã gì hết 😄</p>
+    <div class="tips">
+      <div class="tip">💸 Hoàn tiền tự động sau khi đơn hoàn thành</div>
+      <div class="tip">🏷️ Voucher, freeship, flash sale vẫn dùng bình thường</div>
+    </div>
+    <button class="btn-primary" onclick="goToShopee()">
+      <div class="btn-inner">Vào Shopee mua thôi! <span class="arrow">→</span></div>
+    </button>
+    <button class="btn-ghost" onclick="showPage('page-login')">🔐 Đăng nhập tài khoản hoàn tiền</button>
+    <p class="cta-note">Mua qua link - tiền tự động tích về tài khoản!</p>
+  </div>
+
+  <!-- LOGIN PAGE -->
+  <div class="page" id="page-login">
+    <div class="login-header">
+      <div class="login-icon">🔐</div>
+      <div class="login-title">Đăng nhập</div>
+      <div class="login-sub">Xem lịch sử mua hàng & hoàn tiền của bạn</div>
+    </div>
+
+    <div class="error-msg" id="login-error">Sai tên đăng nhập hoặc mật khẩu 😅</div>
+
+    <div class="form-group">
+      <label>Tên đăng nhập</label>
+      <input type="text" id="input-username" placeholder="username" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label>Mật khẩu</label>
+      <input type="password" id="input-password" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+
+    <button class="btn-primary" onclick="doLogin()">
+      <div class="btn-inner">Đăng nhập <span class="arrow">→</span></div>
+    </button>
+
+    <div class="back-link" onclick="showPage('page-home')">← Quay lại</div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar">😊</div>
+      <div class="profile-name" id="profile-name">–</div>
+      <div class="profile-handle" id="profile-handle">–</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num" id="stat-orders">0</div>
+        <div class="stat-label">Đơn đã mua</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-total">0đ</div>
+        <div class="stat-label">Tổng chi tiêu</div>
+      </div>
+    </div>
+
+    <div class="cashback-banner">
+      <div class="cashback-left">
+        <div class="cashback-label">Hoàn tiền tích lũy</div>
+        <div class="cashback-amount" id="stat-cashback">0đ</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:4px;">Rút tiền khi đạt 50.000đ 🏦</div>
+      </div>
+      <div class="cashback-icon">💰</div>
+    </div>
+
+    <div class="section-title">
+      Lịch sử mua hàng
+      <!-- <span class="coming-soon-badge">sync sắp có</span> -->
+    </div>
+    <div class="order-list" id="order-list"></div>
+
+    <button class="btn-primary" onclick="goToShopee()">
+      <div class="btn-inner">Đi tới Shopee <span class="arrow">→</span></div>
+    </button>
+    <button class="logout-btn" onclick="doLogout()">Đăng xuất</button>
+  </div>
+
+</div>
+
+<p class="footer">Made with ❤️ by Thức</p>
+
+<script>
+  const USERS = {
+    "tuyenha": {
+      displayName: "Tuyền Hà",
+      avatar: "👩",
+      passwordHash: "dd2e9405a45e09ae1b963338d7779fadadb06353a961b0a1e0dadba5e9cdb47e",
+    },
+    "buiyen":{
+      displayName: "Bùi Yến",
+      avatar: "👩",
+      passwordHash: "0f9f681fa58c09c3e141e736d645085224d5e10e3f78c29b421ce225292d12f9",
+    },
+    "phatvo": {
+      displayName: "Phát Võ",
+      avatar: "👦",
+      passwordHash: "b138ae72d328086e729897e439603615c83256da8e811f915f0a78e5df6bb227",
+    },
+    "duongtran": {
+      displayName: "Dương Trân",
+      avatar: "👦",
+      passwordHash: "49099d4b426459429b335d40887e58ec08c510a02223650ed4dd01c9605c7f18",
+    },
+    "thanhtuan": {
+      displayName: "Thanh Tuấn",
+      avatar: "👦",
+      passwordHash: "d7009560ebb456dfd0485bac60b47c9d4761a3c3a0518dc1e75029bcdfec28f8",
+    },
+    "giathuong": {
+      displayName: "Gia Thương",
+      avatar: "👦",
+      passwordHash: "bea5253759a7dc032c44b9caa219c9912f0945d02923d3f53f7a9fc7604d87d1",
+    },
+    "maihuong": {
+      displayName: "Mai Huong",
+      avatar: "👩",
+      passwordHash: "513c4b79a5754c2bc1660041a2b4e6c5a89e925ca3c85cbcd5529027b3a6e841",
+    },
+    "ngochan": {
+      displayName: "Ngọc Hân",
+      avatar: "👩",
+      passwordHash: "d03184e24b90859d0b73c49b1242c8e149681f0be0fb25731089b17c48446f24",
+    },
+    "giayen": {
+      displayName: "Gia Yến",
+      avatar: "👩",
+      passwordHash: "dfd04fe13fba22676ad1f20e6ceeb164e5ab591d0d96b9139544ed8dfcbc762d",
+    },
+    "caohau": {
+      displayName: "Cao Hậu",
+      avatar: "👦",
+      passwordHash: "0acb65670c6e7d7bdcdb16fcf14636b60e6320c2a993b8a7a562f1d57b2df43a",
+    },
+  };
+
+  // ─────────────────────────────────────────────
+  // MOCK DATA FETCHER - sau này thay bằng fetch("/api/orders?user=...")
+  // ─────────────────────────────────────────────
+  async function fetchUserOrders(username) {
+    // TODO: replace with real API call
+    // return await fetch(`/api/orders?user=${username}`).then(r => r.json());
+    return {
+      orders: [],       // [] = trống, backend sẽ fill sau
+      totalSpent: 0,
+      totalCashback: 0,
+    };
+  }
+
+  // ─────────────────────────────────────────────
+  // UTILS
+  // ─────────────────────────────────────────────
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+  }
+
+  function formatVND(n) {
+    if (!n) return "0đ";
+    return n.toLocaleString("vi-VN") + "đ";
+  }
+
+  function showPage(id) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  function getUserId() {
+    let uid = localStorage.getItem("uid");
+    if (!uid) { uid = crypto.randomUUID(); localStorage.setItem("uid", uid); }
+    return uid;
+  }
+
+  function goToShopee() {
+    const loggedIn = localStorage.getItem("loggedInUser");
+    const subId = loggedIn ? loggedIn : getUserId();
+    window.location.href = `https://s.shopee.vn/qf5MEQYtc?sub_id=${subId}`;
+  }
+
+  // ─────────────────────────────────────────────
+  // LOGIN
+  // ─────────────────────────────────────────────
+  async function doLogin() {
+    const username = document.getElementById("input-username").value.trim().toLowerCase();
+    const password = document.getElementById("input-password").value;
+    const errorEl = document.getElementById("login-error");
+
+    errorEl.classList.remove("show");
+
+    const user = USERS[username];
+    if (!user) { showError(); return; }
+
+    const hash = await sha256(password);
+    if (hash !== user.passwordHash) { showError(); return; }
+
+    // Login success
+    localStorage.setItem("loggedInUser", username);
+    document.getElementById("input-password").value = "";
+    await loadProfile(username, user);
+    showPage("page-profile");
+  }
+
+  function showError() {
+    const el = document.getElementById("login-error");
+    el.classList.remove("show");
+    void el.offsetWidth; // force reflow for animation replay
+    el.classList.add("show");
+  }
+
+  function doLogout() {
+    localStorage.removeItem("loggedInUser");
+    showPage("page-home");
+  }
+
+  // ─────────────────────────────────────────────
+  // PROFILE
+  // ─────────────────────────────────────────────
+  async function loadProfile(username, user) {
+    document.getElementById("profile-avatar").textContent = user.avatar;
+    document.getElementById("profile-name").textContent = user.displayName;
+    document.getElementById("profile-handle").textContent = "@" + username;
+
+    const data = await fetchUserOrders(username);
+
+    document.getElementById("stat-orders").textContent = data.orders.length;
+    document.getElementById("stat-total").textContent = formatVND(data.totalSpent);
+    document.getElementById("stat-cashback").textContent = formatVND(data.totalCashback);
+
+    const list = document.getElementById("order-list");
+    if (data.orders.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🛍️</div>
+          Chưa có đơn hàng nào.<br>Mua thử đi nào!
+        </div>`;
+    } else {
+      list.innerHTML = data.orders.map(o => `
+        <div class="order-item">
+          <div class="order-icon">${o.icon || "📦"}</div>
+          <div class="order-info">
+            <div class="order-name">${o.name}</div>
+            <div class="order-date">${o.date}</div>
+          </div>
+          <div class="order-cashback">+${formatVND(o.cashback)}</div>
+        </div>`).join("");
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // AUTO LOGIN if session still active
+  // ─────────────────────────────────────────────
+  (async () => {
+    const saved = localStorage.getItem("loggedInUser");
+    if (saved && USERS[saved]) {
+      await loadProfile(saved, USERS[saved]);
+      showPage("page-profile");
+    }
+  })();
+</script>
+</body>
+</html>
