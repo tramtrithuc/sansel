@@ -1,0 +1,16 @@
+{
+  "name": "Hoàn tiền Shopee",
+  "short_name": "Hoàn tiền Shopee",
+  "start_url": "/mua-sam-hoan-tien/",
+  "scope": "/mua-sam-hoan-tien/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ee4d2d",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
